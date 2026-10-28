@@ -86,22 +86,77 @@ class TuringMachine(object):
 beaver_programs = [
     { },
     {
-        # TODO: Implement 1-state Busy Beaver program
+        "a0": ("h", "1", "r"),
+        "a1": ("h", "1", "r"),
     },
+
     {
-        # TODO: Implement 2-state Busy Beaver program
+        "a0": ("b", "1", "r"),
+        "a1": ("b", "1", "l"),
+        "b0": ("a", "1", "l"),
+        "b1": ("h", "1", "r"),
     },
+
     {
-        # TODO: Implement 3-state Busy Beaver program
+        "a0": ("b", "1", "r"),
+        "a1": ("c", "1", "l"),
+        "b0": ("a", "1", "l"),
+        "b1": ("b", "1", "r"),
+        "c0": ("b", "1", "l"),
+        "c1": ("h", "1", "r"),
     },
+
+
+    # {
+    #     "a0": ("b", "1", "r"),
+    #     "a1": ("c", "1", "l"),
+    #     "b0": ("a", "1", "l"),
+    #     "b1": ("b", "1", "r"),
+    #     "c0": ("b", "1", "l"),
+    #     "c1": ("d", "1", "r"), 
+    #     "d0": ("h", "1", "r"),  
+    #     "d1": ("d", "1", "r"), 
+    # },
+    
     {
-        # TODO: Implement 4-state Busy Beaver program
+        "a0": ("b", "1", "r"),
+        "a1": ("b", "1", "l"),
+        "b0": ("a", "1", "l"),
+        "b1": ("c", "0", "l"),
+        "c0": ("h", "1", "r"),
+        "c1": ("d", "1", "l"),
+        "d0": ("d", "1", "r"),
+        "d1": ("a", "0", "r"),
+
     },
+
     {
-        # TODO: Implement 5-state Busy Beaver program
+        "a0": ("b", "1", "r"),
+        "a1": ("c", "1", "l"),
+        "b0": ("a", "1", "l"),
+        "b1": ("b", "1", "r"),
+        "c0": ("b", "1", "l"),
+        "c1": ("d", "1", "r"), 
+        "d0": ("e", "1", "l"), 
+        "d1": ("d", "1", "r"),  
+        "e0": ("h", "1", "r"),  
+        "e1": ("e", "1", "l"),
     },
+
+
     {
-        # TODO: Implement 6-state Busy Beaver program
+        "a0": ("b", "1", "r"),
+        "a1": ("c", "1", "l"),
+        "b0": ("a", "1", "l"),
+        "b1": ("b", "1", "r"),
+        "c0": ("b", "1", "l"),
+        "c1": ("d", "1", "r"), 
+        "d0": ("e", "1", "l"), 
+        "d1": ("d", "1", "r"),  
+        "e0": ("f", "1", "r"),  
+        "e1": ("e", "1", "l"),
+        "f0": ("h", "1", "r"),  
+        "f1": ("f", "1", "r"),
     }
 ]
 
@@ -135,5 +190,6 @@ if __name__ == "__main__":
     #     usage()
     #
     # busy_beaver(n)
-    busy_beaver(5)
+    for i in range(1,7):
+        busy_beaver(i)
 

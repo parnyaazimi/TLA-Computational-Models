@@ -1,4 +1,4 @@
-from turing_machine import TuringMachine
+from turing_machine_first import TuringMachine
 from test_turing_machine_example1 import print_states
 
 transitions = {

@@ -36,24 +36,52 @@ from turing_machine import TuringMachine
 bbeaver2 = TuringMachine(
     { 
         # TODO: Part III c) - Write your transition rules for the 2-card Busy Beaver program here
+        ('a', '0'): ('b', '1', 'R'),
+        ('a', '1'): ('b', '1', 'L'),
+        ('b', '0'): ('a', '1', 'L'),
+        ('b', '1'): ('h', '1', 'R'),
     },
     start_state='a', accept_state='h', reject_state='r', blank_symbol='0'
 )
 bbeaver3 = TuringMachine(
     {
         # TODO: Part III e) - Write your own transition rules for the 3-card Busy Beaver program here
+        ('a', '0'): ('b', '1', 'R'),
+        ('a', '1'): ('c', '1', 'L'),
+        ('b', '0'): ('a', '1', 'L'),
+        ('b', '1'): ('b', '1', 'R'),
+        ('c', '0'): ('b', '1', 'L'),
+        ('c', '1'): ('h', '1', 'R'),
     },
     start_state='a', accept_state='h', reject_state='r', blank_symbol='0'
 )
 bbeaver4 = TuringMachine(
     {
         # TODO: Part III e) - Write your own transition rules for the 4-card Busy Beaver program here
+        ('a', '0'): ('b', '1', 'R'),
+        ('a', '1'): ('c', '1', 'L'),
+        ('b', '0'): ('a', '1', 'L'),
+        ('b', '1'): ('b', '1', 'R'),
+        ('c', '0'): ('b', '1', 'L'),
+        ('c', '1'): ('d', '1', 'R'),
+        ('d', '0'): ('h', '1', 'R'),
+        ('d', '1'): ('d', '1', 'R'),
     },
     start_state='a', accept_state='h', reject_state='r', blank_symbol='0'
 )
 bbeaver5 = TuringMachine(
     {
         # TODO: Part III f) - Write your own transition rules for the 5-card Busy Beaver program here
+        ('a', '0'): ('b', '1', 'R'),
+        ('a', '1'): ('c', '1', 'L'),
+        ('b', '0'): ('a', '1', 'L'),
+        ('b', '1'): ('b', '1', 'R'),
+        ('c', '0'): ('b', '1', 'L'),
+        ('c', '1'): ('d', '1', 'R'),
+        ('d', '0'): ('e', '1', 'L'),
+        ('d', '1'): ('d', '1', 'R'),
+        ('e', '0'): ('h', '1', 'R'),
+        ('e', '1'): ('e', '1', 'L'),
     },
     start_state='a', accept_state='h', reject_state='r', blank_symbol='0'
 )

@@ -1,4 +1,4 @@
-from turing_machine import TuringMachine
+from turing_machine_first import TuringMachine
 
 
 transitions = {

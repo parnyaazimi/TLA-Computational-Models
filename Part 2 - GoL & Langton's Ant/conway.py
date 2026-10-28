@@ -21,7 +21,86 @@ def parse_pattern(filepath):
         tuple: (width, height, list of (r, c) offsets of live cells)
     """
     # Student TODO: Implement parser here
-    pass
+    live_cells = []
+    width = 0
+    height = 0
+    
+    with open(filepath, 'r') as f:
+        content = f.read()
+
+    lines = content.strip().split('\n')
+
+    header_line = None
+    for line in lines:
+        line = line.strip()
+        if line.startswith('x ='):
+            header_line = line
+            break
+
+    if header_line is not None:  # RLE
+        parts = header_line.split(',')
+        for part in parts:
+            part = part.strip()
+            if part.startswith('x ='):
+                width = int(part.split('=')[1].strip())
+            elif part.startswith('y ='):
+                height = int(part.split('=')[1].strip())
+        
+        rle_string = ''
+        for line in lines:
+            if not line.startswith('x =') and not line.startswith('#'):
+                rle_string += line.strip()
+        rle_string = rle_string.replace(' ', '')
+        
+        row = 0
+        col = 0
+        i = 0
+        while i < len(rle_string):
+            if rle_string[i] == '!':
+                break
+            
+            count = 0
+            while i < len(rle_string) and rle_string[i].isdigit():
+                count = count * 10 + int(rle_string[i])
+                i += 1
+            
+            if i >= len(rle_string):
+                break
+            
+            char = rle_string[i]
+            i += 1
+            
+            if count == 0:
+                count = 1
+            
+            if char == 'b':
+                col += count
+            elif char == 'o':
+                for _ in range(count):
+                    live_cells.append((row, col))
+                    col += 1
+            elif char == '$':
+                row += count
+                col = 0
+    
+
+    else:   #Plaintext
+        lines = content.strip().split('\n')
+        data_lines = []
+        for line in lines:
+            if not line.startswith('!'):
+                data_lines.append(line.rstrip())
+        
+        height = len(data_lines)
+        width = max(len(line) for line in data_lines) if data_lines else 0
+        
+        for r, line in enumerate(data_lines):
+            for c, char in enumerate(line):
+                if char == 'O' or char == 'o':
+                    live_cells.append((r, c))
+    
+    return width, height, live_cells     
+
 
 
 class GameOfLife:
@@ -44,13 +123,14 @@ class GameOfLife:
         """
         Returns the current states of the cells
         """
-        return self.grid
+        return self.getGrid()
 
     def getGrid(self):
         """
         Same as getStates()
         """
-        return self.getStates()
+        return self.grid
+        
 
     def update_grid_fast(self, grid):
         """
@@ -65,7 +145,19 @@ class GameOfLife:
             np.ndarray: The next 2D grid of states.
         """
         # Student TODO: Implement fast 2D convolution method
-        pass
+        
+        if self.finite:
+            neighbor_count = signal.convolve2d(grid, self.neighborhood, mode='same', boundary='fill', fillvalue=0)
+        else:
+            neighbor_count = signal.convolve2d(grid, self.neighborhood, mode='same', boundary='wrap')
+        
+        
+        survival = (grid == self.aliveValue) & ((neighbor_count == 2) | (neighbor_count == 3))
+        birth = (grid == self.deadValue) & (neighbor_count == 3)
+        
+        new_grid = np.where(survival | birth, self.aliveValue, self.deadValue)
+        return new_grid.astype(np.uint8)
+        
 
     def evolve(self):
         """
@@ -84,7 +176,42 @@ class GameOfLife:
             # through the cells cell-by-cell. Handle self.finite wrapping appropriately.
             
             # Student TODO: Implement slow update cell-by-cell logic here
-            pass
+            N = self.rows
+            new_grid = np.zeros((N, N), np.uint)
+
+            for i in range(N):
+                for j in range(N):
+                    live_neighbors = 0                    
+                    for di in [-1, 0, 1]:
+                        for dj in [-1, 0, 1]:
+                            if di == 0 and dj == 0:
+                                continue 
+                            ni = i + di
+                            nj = j + dj                            
+                            if self.finite:
+                                if 0 <= ni < N and 0 <= nj < N:
+                                    live_neighbors += self.grid[ni, nj]
+                            else:
+                                ni = ni % N
+                                nj = nj % N
+                                live_neighbors += self.grid[ni, nj]
+                    current_cell = self.grid[i, j]                    
+                    if current_cell == self.aliveValue: 
+                        if live_neighbors < 2:
+                            new_grid[i, j] = self.deadValue
+
+                        elif live_neighbors == 2 or live_neighbors == 3:
+                            new_grid[i, j] = self.aliveValue
+                        else:  
+                            new_grid[i, j] = self.deadValue
+                    else:
+                        if live_neighbors == 3:
+                            new_grid[i, j] = self.aliveValue
+                        else:
+                            new_grid[i, j] = self.deadValue
+            
+            self.grid = new_grid
+
 
     def insertBlinker(self, index=(0, 0)):
         '''
@@ -129,15 +256,19 @@ class GameOfLife:
         self.grid[index[0] + 4, index[1] + 36] = self.aliveValue
         self.grid[index[0] + 4, index[1] + 37] = self.aliveValue
 
-        self.grid[index[0] + 5, index[1] + 1 + 1] = self.aliveValue
-        self.grid[index[0] + 5, index[1] + 2 + 1] = self.aliveValue
+        # self.grid[index[0] + 5, index[1] + 1 + 1] = self.aliveValue
+        # self.grid[index[0] + 5, index[1] + 2 + 1] = self.aliveValue
+        self.grid[index[0] + 5, index[1] + 2] = self.aliveValue
+        self.grid[index[0] + 5, index[1] + 3] = self.aliveValue
         self.grid[index[0] + 5, index[1] + 12] = self.aliveValue
         self.grid[index[0] + 5, index[1] + 18] = self.aliveValue
         self.grid[index[0] + 5, index[1] + 22] = self.aliveValue
         self.grid[index[0] + 5, index[1] + 23] = self.aliveValue
 
-        self.grid[index[0] + 6, index[1] + 1 + 1] = self.aliveValue
-        self.grid[index[0] + 6, index[1] + 2 + 1] = self.aliveValue
+        # self.grid[index[0] + 6, index[1] + 1 + 1] = self.aliveValue
+        # self.grid[index[0] + 6, index[1] + 2 + 1] = self.aliveValue
+        self.grid[index[0] + 6, index[1] + 2] = self.aliveValue
+        self.grid[index[0] + 6, index[1] + 3] = self.aliveValue
         self.grid[index[0] + 6, index[1] + 12] = self.aliveValue
         self.grid[index[0] + 6, index[1] + 16] = self.aliveValue
         self.grid[index[0] + 6, index[1] + 18] = self.aliveValue
